@@ -228,7 +228,7 @@ def check_external_dependancy(handler):
 
 
 @check_external_dependancy
-class _ExternalKeyHandler(_ExternalKeyHandlerBase):
+class ExternalKeyHandler(_ExternalKeyHandlerBase):
     """Main ExifHandler implementation based on pyexiv2."""
 
     MESSAGE_SUFFIX = " by pyexiv2."
@@ -299,7 +299,7 @@ class _ExternalKeyHandler(_ExternalKeyHandlerBase):
         return ""
 
 
-has_exif_support = _ExternalKeyHandler != _ExternalKeyHandlerBase
+has_exif_support = ExternalKeyHandler != _ExternalKeyHandlerBase
 
 
 class MetadataHandler:
@@ -313,7 +313,7 @@ class MetadataHandler:
     def __init__(self, filename=""):
         self.filename = filename
         self._internal_handler: Optional[_InternalKeyHandler] = None
-        self._external_handler: Optional[_ExternalKeyHandler] = None
+        self._external_handler: Optional[ExternalKeyHandler] = None
 
     @property
     def internal_handler(self) -> _InternalKeyHandler:
@@ -322,31 +322,10 @@ class MetadataHandler:
         return self._internal_handler
 
     @property
-    def external_handler(self) -> _ExternalKeyHandler:
+    def external_handler(self) -> ExternalKeyHandler:
         if self._external_handler is None:
-            self._external_handler = _ExternalKeyHandler(self.filename)
+            self._external_handler = ExternalKeyHandler(self.filename)
         return self._external_handler
-
-    def copy_metadata(self, dest: str, reset_orientation: bool = True) -> None:
-        """Copy exif information from current image to dest.
-
-        Args:
-            dest: Path to write the exif information to.
-            reset_orientation: If true, reset the exif orientation tag to normal.
-        """
-        try:
-            self.external_handler.copy(dest, reset_orientation)
-        except UnsupportedExifOperation:
-            # Todo
-            pass
-
-    def get_date_time(self) -> str:
-        """Get exif creation date and time as formatted string."""
-        try:
-            self.external_handler.get_data_time()
-        except UnsupportedExifOperation:
-            # Todo
-            pass
 
     def get_formatted_metadata(
         self, desired_keys: Sequence[str]

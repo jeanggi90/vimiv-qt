@@ -123,7 +123,7 @@ def exif_date_time() -> str:
     be used as basis to work with.
     """
     try:
-        return imutils.exif.ExifHandler(current()).exif_date_time()
+        return imutils.exif.ExternalKeyHandler(current()).get_date_time()
     except imutils.exif.UnsupportedExifOperation:
         return ""
 
